@@ -17,3 +17,6 @@ rag-bootcamp/eval/out/
 
 # OS
 .DS_Store
+
+# Editor
+.vscode/
