@@ -1,6 +1,10 @@
 # ai-portfolio
 
-A small workspace for AI application projects.
+Portfolio workspace.
+
+## Structure
+- `playground/` — small experiments
+- `projects/` — finished or in-progress projects
 
 ## Projects
-- `rag-bootcamp/` — Document KB Q&A (RAG) bootcamp project.
+- `projects/rag-kb/` — Document KB Q&A (RAG)
