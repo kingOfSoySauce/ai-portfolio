@@ -1,997 +1,346 @@
-# Python 基础速查（面向 JS/TS 开发者）
+# Python 基础（面向 React 前端工程师）
 
-> 本文档记录 Python 常用语法和 JS 对照，遇到新语法时持续更新
-
----
-
-## 1. 装饰器（Decorator）
-
-### Python
-```python
-@app.get("/health")
-async def health_check():
-    return {"ok": True}
-
-# 等价于
-def health_check():
-    return {"ok": True}
-health_check = app.get("/health")(health_check)
-```
-
-### JS 类比
-```javascript
-// 类似高阶函数
-function route(path) {
-  return function(fn) {
-    app.register(path, fn);
-    return fn;
-  }
-}
-
-@route("/health")
-function healthCheck() {
-  return { ok: true };
-}
-```
-
-### 常见用途
-- 路由注册：`@app.get()`
-- 上下文管理：`@asynccontextmanager`
-- 缓存：`@lru_cache`
+## 金字塔顶层：一句话总结
+**Python 是一门动态类型、解释执行的语言，语法简洁，适合快速实现 AI 应用的后端逻辑（RAG/Agent/API）。**
 
 ---
 
-## 2. 类型注解（Type Hints）
+## 第一层：你需要掌握的 3 大核心能力
 
-### Python
+### 1. 基础语法与数据结构（对标 JS 基础）
+- 变量、函数、控制流
+- 常用数据结构：list、dict、tuple、set
+- 类与对象（面向对象基础）
+
+### 2. 异步与并发（对标 async/await）
+- `async/await` 语法
+- `asyncio` 事件循环
+- 何时用异步（I/O 密集场景：API 调用、数据库查询）
+
+### 3. 包管理与项目结构（对标 npm/pnpm + monorepo）
+- `pip` / `uv` 安装依赖
+- 虚拟环境 `venv`（对标 node_modules 隔离）
+- `requirements.txt`（对标 package.json）
+
+---
+
+## 第二层：逐个击破（JS/TS 类比 + 最小示例）
+
+### 1. 基础语法与数据结构
+
+#### 1.1 变量与类型
+**Python 特点**：动态类型，但可以用类型注解（类似 TS）
+
 ```python
+# JS: const name = "Alice";
+name: str = "Alice"  # 类型注解（可选，但推荐）
+
+# JS: let age = 25;
+age: int = 25
+
+# JS: const isActive = true;
+is_active: bool = True  # 注意：True/False 首字母大写
+```
+
+**关键差异**：
+- Python 用 `True/False`，不是 `true/false`
+- 变量命名推荐 `snake_case`（不是 camelCase）
+- 类型注解不强制，但加上后 IDE 会提示（类似 TS）
+
+#### 1.2 函数定义
+**Python 特点**：用 `def` 定义，缩进表示代码块（不是 `{}`）
+
+```python
+# JS:
+# function greet(name) {
+#   return `Hello, ${name}`;
+# }
+
 def greet(name: str) -> str:
-    return f"Hello {name}"
+    return f"Hello, {name}"  # f-string，类似 JS 的模板字符串
 
-# 复杂类型
-from typing import List, Dict, Optional
-
-def process(items: List[str]) -> Dict[str, int]:
-    return {item: len(item) for item in items}
-
-def find(id: Optional[int] = None) -> str:
-    return "found" if id else "not found"
+# 调用
+print(greet("Alice"))  # 输出：Hello, Alice
 ```
 
-### JS/TS 类比
-```typescript
-function greet(name: string): string {
-  return `Hello ${name}`;
-}
+**关键差异**：
+- 用 `def` 不是 `function`
+- 用缩进（4 空格）表示代码块，不是 `{}`
+- 用 `f"..."` 做字符串插值，类似 JS 的 `` `...` ``
 
-function process(items: string[]): Record<string, number> {
-  return items.reduce((acc, item) => ({
-    ...acc, [item]: item.length
-  }), {});
-}
+#### 1.3 数据结构对照表
 
-function find(id?: number): string {
-  return id ? "found" : "not found";
-}
-```
+| Python 类型 | JS/TS 对应 | 说明 | 示例 |
+|------------|-----------|------|------|
+| `list` | `Array` | 可变数组 | `[1, 2, 3]` |
+| `tuple` | 只读数组（readonly） | 不可变数组 | `(1, 2, 3)` |
+| `dict` | `Object` / `Map` | 键值对 | `{"name": "Alice"}` |
+| `set` | `Set` | 去重集合 | `{1, 2, 3}` |
 
-### 关键差异
-- Python 类型注解是**可选的**（运行时不强制）
-- 需要用 `mypy` 或 IDE 做静态检查
-- Pydantic 可以做运行时校验
+**最小示例**：
 
----
-
-## 3. async/await
-
-### Python
 ```python
-async def fetch_data():
-    await asyncio.sleep(1)
-    return "data"
+# list（类似 JS 的 Array）
+fruits: list[str] = ["apple", "banana"]
+fruits.append("orange")  # 类似 JS 的 push
+print(fruits[0])  # 输出：apple
 
-# 运行
-import asyncio
-result = asyncio.run(fetch_data())
+# dict（类似 JS 的对象）
+user: dict[str, str] = {"name": "Alice", "role": "admin"}
+print(user["name"])  # 输出：Alice
+print(user.get("age", 18))  # 类似 JS 的 user.age ?? 18
+
+# list comprehension（类似 JS 的 map/filter 组合）
+# JS: const doubled = [1, 2, 3].map(x => x * 2);
+doubled: list[int] = [x * 2 for x in [1, 2, 3]]
+print(doubled)  # 输出：[2, 4, 6]
 ```
 
-### JS 类比
-```javascript
-async function fetchData() {
-  await new Promise(resolve => setTimeout(resolve, 1000));
-  return "data";
-}
+**你会在哪里用到**：
+- `list`：存储文档切块、检索结果
+- `dict`：配置对象、API 响应体
+- list comprehension：批量处理数据（如过滤、转换）
 
-// 运行
-const result = await fetchData();
-```
+#### 1.4 类与对象（面向对象基础）
+**Python 特点**：用 `class` 定义，`__init__` 是构造函数
 
-### 关键差异
-- Python 需要 `asyncio.run()` 启动事件循环
-- FastAPI 自动处理，你只需要写 `async def`
-
----
-
-## 4. 字典（dict）
-
-### Python
 ```python
-# 创建
-user = {"name": "Alice", "age": 25}
+# JS:
+# class User {
+#   constructor(name, age) {
+#     this.name = name;
+#     this.age = age;
+#   }
+#   greet() {
+#     return `Hi, I'm ${this.name}`;
+#   }
+# }
 
-# 访问
-user["name"]           # "Alice"
-user.get("email", "")  # 默认值
-
-# 遍历
-for key, value in user.items():
-    print(f"{key}: {value}")
-
-# 字典推导式
-squares = {x: x**2 for x in range(5)}
-# {0: 0, 1: 1, 2: 4, 3: 9, 4: 16}
-```
-
-### JS 类比
-```javascript
-// 创建
-const user = { name: "Alice", age: 25 };
-
-// 访问
-user.name;              // "Alice"
-user.email || "";       // 默认值
-
-// 遍历
-Object.entries(user).forEach(([key, value]) => {
-  console.log(`${key}: ${value}`);
-});
-
-// 类似字典推导式
-const squares = Object.fromEntries(
-  Array.from({length: 5}, (_, x) => [x, x**2])
-);
-```
-
-### 关键差异
-- Python 用 `[]` 访问，JS 用 `.` 或 `[]`
-- Python 的 `.get()` 有默认值，JS 需要 `||` 或 `??`
-
----
-
-## 5. 列表（list）
-
-### Python
-```python
-# 创建
-nums = [1, 2, 3, 4, 5]
-
-# 常用操作
-nums.append(6)         # 添加
-nums[0]                # 访问
-nums[1:3]              # 切片 [2, 3]
-len(nums)              # 长度
-
-# 列表推导式
-squares = [x**2 for x in nums]
-evens = [x for x in nums if x % 2 == 0]
-```
-
-### JS 类比
-```javascript
-// 创建
-const nums = [1, 2, 3, 4, 5];
-
-// 常用操作
-nums.push(6);          // 添加
-nums[0];               // 访问
-nums.slice(1, 3);      // 切片 [2, 3]
-nums.length;           // 长度
-
-// 类似列表推导式
-const squares = nums.map(x => x**2);
-const evens = nums.filter(x => x % 2 === 0);
-```
-
----
-
-## 6. 字符串格式化
-
-### Python
-```python
-name = "Alice"
-age = 25
-
-# f-string（推荐）
-msg = f"Hello {name}, you are {age}"
-
-# format
-msg = "Hello {}, you are {}".format(name, age)
-
-# % 格式化（旧式）
-msg = "Hello %s, you are %d" % (name, age)
-```
-
-### JS 类比
-```javascript
-const name = "Alice";
-const age = 25;
-
-// 模板字符串
-const msg = `Hello ${name}, you are ${age}`;
-```
-
----
-
-## 7. 类（Class）
-
-### Python
-```python
 class User:
-    def __init__(self, name: str):
+    def __init__(self, name: str, age: int):
         self.name = name
+        self.age = age
     
-    def greet(self):
-        return f"Hello {self.name}"
-
-user = User("Alice")
-user.greet()  # "Hello Alice"
-```
-
-### JS 类比
-```javascript
-class User {
-  constructor(name) {
-    this.name = name;
-  }
-  
-  greet() {
-    return `Hello ${this.name}`;
-  }
-}
-
-const user = new User("Alice");
-user.greet();  // "Hello Alice"
-```
-
-### 关键差异
-- Python 用 `__init__` 代替 `constructor`
-- Python 方法第一个参数必须是 `self`（类似 JS 的 `this`）
-
----
-
-## 8. 导入（import）
-
-### Python
-```python
-# 导入整个模块
-import os
-os.path.join("a", "b")
-
-# 导入特定函数
-from os.path import join
-join("a", "b")
-
-# 导入并重命名
-from fastapi import FastAPI as App
-
-# 导入所有（不推荐）
-from os.path import *
-```
-
-### JS 类比
-```javascript
-// CommonJS
-const os = require('os');
-const { join } = require('path');
-
-// ES6
-import os from 'os';
-import { join } from 'path';
-import { FastAPI as App } from 'fastapi';
-```
-
----
-
-## 9. 异常处理
-
-### Python
-```python
-try:
-    result = 10 / 0
-except ZeroDivisionError as e:
-    print(f"Error: {e}")
-except Exception as e:
-    print(f"Unknown error: {e}")
-finally:
-    print("Cleanup")
-```
-
-### JS 类比
-```javascript
-try {
-  const result = 10 / 0;
-} catch (e) {
-  if (e instanceof ZeroDivisionError) {
-    console.log(`Error: ${e}`);
-  } else {
-    console.log(`Unknown error: ${e}`);
-  }
-} finally {
-  console.log("Cleanup");
-}
-```
-
----
-
-## 10. 上下文管理器（with）
-
-### Python
-```python
-# 自动关闭文件
-with open("file.txt", "r") as f:
-    content = f.read()
-# 离开 with 块后自动调用 f.close()
-
-# 自定义上下文管理器
-from contextlib import asynccontextmanager
-
-@asynccontextmanager
-async def lifespan(app):
-    print("启动")
-    yield
-    print("关闭")
-```
-
-### JS 类比
-```javascript
-// 没有直接对应，类似 try...finally
-const f = fs.openSync("file.txt", "r");
-try {
-  const content = fs.readFileSync(f);
-} finally {
-  fs.closeSync(f);
-}
-```
-
----
-
-## 常用内置函数速查
-
-| Python | JS 类比 | 说明 |
-|--------|---------|------|
-| `len(list)` | `list.length` | 长度 |
-| `range(5)` | `Array.from({length: 5}, (_, i) => i)` | 生成序列 |
-| `enumerate(list)` | `list.map((v, i) => [i, v])` | 带索引遍历 |
-| `zip(a, b)` | `a.map((v, i) => [v, b[i]])` | 合并列表 |
-| `any([...])` | `[...].some(x => x)` | 任意为真 |
-| `all([...])` | `[...].every(x => x)` | 全部为真 |
-
----
-
-## 下次遇到新语法时
-
-1. 在这个文件里添加新的章节
-2. 写清楚 Python 代码 + JS 类比
-3. 标注关键差异和坑点
-
-
----
-
-## 11. 生成器（Generator）
-
-### Python
-```python
-# 用 yield 创建生成器
-def count_up_to(n):
-    i = 0
-    while i < n:
-        yield i
-        i += 1
+    def greet(self) -> str:
+        return f"Hi, I'm {self.name}"
 
 # 使用
-for num in count_up_to(5):
-    print(num)  # 0, 1, 2, 3, 4
-
-# 生成器表达式
-squares = (x**2 for x in range(5))
+user = User("Alice", 25)
+print(user.greet())  # 输出：Hi, I'm Alice
 ```
 
-### JS 类比
-```javascript
-// Generator
-function* countUpTo(n) {
-  let i = 0;
-  while (i < n) {
-    yield i;
-    i++;
-  }
-}
+**关键差异**：
+- 构造函数叫 `__init__`（不是 `constructor`）
+- 方法第一个参数必须是 `self`（类似 JS 的 `this`，但要显式写出来）
+- 没有 `new` 关键字，直接调用类名
 
-for (const num of countUpTo(5)) {
-  console.log(num);
-}
-```
-
-### 用途
-- 节省内存（不一次性生成所有数据）
-- SSE 流式输出（Day2 会用到）
-- 处理大文件（逐行读取）
+**你会在哪里用到**：
+- 封装 RAG 组件（如 `VectorStore`、`Retriever`）
+- 定义配置类（用 `pydantic` 做校验）
 
 ---
 
-## 12. Lambda 函数（匿名函数）
+### 2. 异步与并发
 
-### Python
+#### 2.1 async/await 语法
+**Python 特点**：语法类似 JS，但运行机制不同（需要事件循环）
+
 ```python
-# lambda 语法
-add = lambda x, y: x + y
-add(2, 3)  # 5
+import asyncio
 
-# 常用于 map/filter/sorted
-nums = [1, 2, 3, 4, 5]
-squares = list(map(lambda x: x**2, nums))
-evens = list(filter(lambda x: x % 2 == 0, nums))
-sorted_users = sorted(users, key=lambda u: u['age'])
+# JS:
+# async function fetchData() {
+#   const response = await fetch("https://api.example.com");
+#   return response.json();
+# }
+
+async def fetch_data() -> dict:
+    await asyncio.sleep(1)  # 模拟异步操作（类似 setTimeout）
+    return {"status": "ok"}
+
+# 运行异步函数（关键差异！）
+# JS 可以直接 await，Python 需要事件循环
+result = asyncio.run(fetch_data())
+print(result)  # 输出：{'status': 'ok'}
 ```
 
-### JS 类比
-```javascript
-// 箭头函数
-const add = (x, y) => x + y;
-add(2, 3);  // 5
+**关键差异**：
+- Python 的 `async/await` 必须在事件循环中运行（用 `asyncio.run()`）
+- JS 的 `await` 可以在顶层直接用（Node.js 14+），Python 不行
 
-// 常用于 map/filter/sort
-const nums = [1, 2, 3, 4, 5];
-const squares = nums.map(x => x**2);
-const evens = nums.filter(x => x % 2 === 0);
-const sortedUsers = users.sort((a, b) => a.age - b.age);
-```
+#### 2.2 何时用异步？
+**规则**：I/O 密集场景（网络请求、数据库查询、文件读写）
 
-### 关键差异
-- Python lambda 只能写一行表达式
-- 复杂逻辑用 `def` 定义函数
-
----
-
-## 13. *args 和 **kwargs（可变参数）
-
-### Python
 ```python
-# *args：接收任意数量的位置参数
-def sum_all(*args):
-    return sum(args)
+# 场景：同时调用多个 LLM API
+async def call_llm(prompt: str) -> str:
+    # 模拟 API 调用
+    await asyncio.sleep(1)
+    return f"Response to: {prompt}"
 
-sum_all(1, 2, 3, 4)  # 10
+async def batch_call():
+    # 并发调用 3 次（类似 Promise.all）
+    results = await asyncio.gather(
+        call_llm("Question 1"),
+        call_llm("Question 2"),
+        call_llm("Question 3"),
+    )
+    return results
 
-# **kwargs：接收任意数量的关键字参数
-def print_info(**kwargs):
-    for key, value in kwargs.items():
-        print(f"{key}: {value}")
-
-print_info(name="Alice", age=25)
-# name: Alice
-# age: 25
-
-# 组合使用
-def func(a, b, *args, **kwargs):
-    print(f"a={a}, b={b}")
-    print(f"args={args}")
-    print(f"kwargs={kwargs}")
-
-func(1, 2, 3, 4, x=5, y=6)
-# a=1, b=2
-# args=(3, 4)
-# kwargs={'x': 5, 'y': 6}
+# 运行
+results = asyncio.run(batch_call())
+print(results)
 ```
 
-### JS 类比
-```javascript
-// Rest parameters
-function sumAll(...args) {
-  return args.reduce((a, b) => a + b, 0);
-}
-
-sumAll(1, 2, 3, 4);  // 10
-
-// 对象解构
-function printInfo(options) {
-  Object.entries(options).forEach(([key, value]) => {
-    console.log(`${key}: ${value}`);
-  });
-}
-
-printInfo({ name: "Alice", age: 25 });
-```
+**你会在哪里用到**：
+- RAG 检索时并发查询多个数据源
+- Agent 并发调用多个工具
+- FastAPI 的异步路由（`async def` 路由函数）
 
 ---
 
-## 14. 解包（Unpacking）
+### 3. 包管理与项目结构
 
-### Python
+#### 3.1 虚拟环境（对标 node_modules）
+**为什么需要**：隔离项目依赖，避免全局污染
+
+```bash
+# 创建虚拟环境（类似 npm init）
+python -m venv .venv
+
+# 激活虚拟环境
+# macOS/Linux:
+source .venv/bin/activate
+# Windows:
+.venv\Scripts\activate
+
+# 安装依赖（类似 npm install）
+pip install fastapi uvicorn
+
+# 导出依赖列表（类似 package.json）
+pip freeze > requirements.txt
+
+# 安装依赖（类似 npm install）
+pip install -r requirements.txt
+```
+
+**你会在哪里用到**：
+- 每个项目都要创建独立虚拟环境
+- `projects/rag-kb/backend/.venv` 就是你的虚拟环境
+
+#### 3.2 requirements.txt（对标 package.json）
+**格式**：每行一个包，可以指定版本
+
+```txt
+fastapi==0.115.0
+uvicorn[standard]==0.32.0
+openai==1.54.0
+python-dotenv==1.0.0
+```
+
+**关键差异**：
+- 没有 `devDependencies`，所有依赖都在一起
+- 版本号用 `==`（精确）或 `>=`（最低版本）
+
+---
+
+## 第三层：实战检查清单（你现在要做什么）
+
+### 立即验证（5 分钟）
+在你的 `projects/rag-kb/backend/` 目录下：
+
+1. **创建虚拟环境**：
+```bash
+cd projects/rag-kb/backend
+python -m venv .venv
+source .venv/bin/activate  # macOS
+```
+
+2. **写一个最小 Python 脚本**（`test_basics.py`）：
 ```python
-# 列表解包
-a, b, c = [1, 2, 3]
+# 测试：变量、函数、list、dict
+def process_docs(docs: list[str]) -> dict:
+    return {
+        "count": len(docs),
+        "first": docs[0] if docs else None
+    }
 
-# 字典解包
-user = {"name": "Alice", "age": 25}
-print(**user)  # 等价于 print(name="Alice", age=25)
-
-# * 解包列表
-nums = [1, 2, 3]
-print(*nums)  # 等价于 print(1, 2, 3)
-
-# ** 解包字典
-def greet(name, age):
-    return f"Hello {name}, {age}"
-
-user = {"name": "Alice", "age": 25}
-greet(**user)  # 等价于 greet(name="Alice", age=25)
+docs = ["doc1.txt", "doc2.txt"]
+result = process_docs(docs)
+print(result)  # 应该输出：{'count': 2, 'first': 'doc1.txt'}
 ```
 
-### JS 类比
-```javascript
-// 数组解构
-const [a, b, c] = [1, 2, 3];
-
-// 对象解构
-const user = { name: "Alice", age: 25 };
-const { name, age } = user;
-
-// Spread operator
-const nums = [1, 2, 3];
-console.log(...nums);  // 1 2 3
-
-const user = { name: "Alice", age: 25 };
-greet({ ...user });
+3. **运行**：
+```bash
+python test_basics.py
 ```
+
+### 复现检查（24 小时内）
+不看这份笔记，尝试：
+- [ ] 写一个函数，接收 `list[dict]`，返回过滤后的结果
+- [ ] 用 list comprehension 实现（类似 JS 的 `filter + map`）
+- [ ] 写一个类，封装配置（name、api_key）
 
 ---
 
-## 15. 列表/字典推导式（进阶）
+## 第四层：常见坑与面试要点
 
-### Python
+### 坑 1：缩进错误
+**问题**：Python 用缩进表示代码块，混用空格和 Tab 会报错
+
+**解决**：
+- 统一用 4 空格（不要用 Tab）
+- VSCode 设置：`"editor.tabSize": 4`，`"editor.insertSpaces": true`
+
+### 坑 2：可变默认参数
+**问题**：
 ```python
-# 嵌套列表推导式
-matrix = [[1, 2, 3], [4, 5, 6]]
-flat = [num for row in matrix for num in row]
-# [1, 2, 3, 4, 5, 6]
+def add_item(item, items=[]):  # 危险！
+    items.append(item)
+    return items
 
-# 带条件的字典推导式
-users = [
-    {"name": "Alice", "age": 25},
-    {"name": "Bob", "age": 17}
-]
-adults = {u["name"]: u["age"] for u in users if u["age"] >= 18}
-# {"Alice": 25}
-
-# 集合推导式
-unique_chars = {c for c in "hello"}
-# {'h', 'e', 'l', 'o'}
+print(add_item(1))  # [1]
+print(add_item(2))  # [1, 2]  ← 预期是 [2]，但默认参数被复用了
 ```
 
-### JS 类比
-```javascript
-// 嵌套 flatMap
-const matrix = [[1, 2, 3], [4, 5, 6]];
-const flat = matrix.flatMap(row => row);
-// [1, 2, 3, 4, 5, 6]
-
-// 带条件的对象
-const users = [
-  { name: "Alice", age: 25 },
-  { name: "Bob", age: 17 }
-];
-const adults = Object.fromEntries(
-  users.filter(u => u.age >= 18).map(u => [u.name, u.age])
-);
-// { Alice: 25 }
-
-// Set
-const uniqueChars = new Set("hello");
-// Set { 'h', 'e', 'l', 'o' }
-```
-
----
-
-## 16. 切片（Slicing）
-
-### Python
+**解决**：
 ```python
-nums = [0, 1, 2, 3, 4, 5]
-
-# 基本切片
-nums[1:4]      # [1, 2, 3]（索引 1 到 3）
-nums[:3]       # [0, 1, 2]（开头到索引 2）
-nums[3:]       # [3, 4, 5]（索引 3 到结尾）
-nums[:]        # [0, 1, 2, 3, 4, 5]（复制整个列表）
-
-# 步长
-nums[::2]      # [0, 2, 4]（每隔一个）
-nums[1::2]     # [1, 3, 5]
-nums[::-1]     # [5, 4, 3, 2, 1, 0]（反转）
-
-# 负索引
-nums[-1]       # 5（最后一个）
-nums[-3:]      # [3, 4, 5]（最后 3 个）
+def add_item(item, items=None):
+    if items is None:
+        items = []
+    items.append(item)
+    return items
 ```
 
-### JS 类比
-```javascript
-const nums = [0, 1, 2, 3, 4, 5];
-
-// 基本切片
-nums.slice(1, 4);     // [1, 2, 3]
-nums.slice(0, 3);     // [0, 1, 2]
-nums.slice(3);        // [3, 4, 5]
-nums.slice();         // [0, 1, 2, 3, 4, 5]
-
-// 步长（需要手动实现）
-nums.filter((_, i) => i % 2 === 0);  // [0, 2, 4]
-nums.reverse();       // [5, 4, 3, 2, 1, 0]
-
-// 负索引
-nums[nums.length - 1];  // 5
-nums.slice(-3);         // [3, 4, 5]
-```
-
----
-
-## 17. 多重赋值和交换
-
-### Python
+### 坑 3：字典键不存在
+**问题**：
 ```python
-# 多重赋值
-x, y = 1, 2
-
-# 交换变量（不需要临时变量）
-x, y = y, x
-
-# 忽略某些值
-a, _, c = [1, 2, 3]  # a=1, c=3
-
-# 收集剩余值
-first, *rest = [1, 2, 3, 4]
-# first=1, rest=[2, 3, 4]
+user = {"name": "Alice"}
+print(user["age"])  # KeyError
 ```
 
-### JS 类比
-```javascript
-// 多重赋值
-let [x, y] = [1, 2];
-
-// 交换变量
-[x, y] = [y, x];
-
-// 忽略某些值
-const [a, , c] = [1, 2, 3];  // a=1, c=3
-
-// Rest operator
-const [first, ...rest] = [1, 2, 3, 4];
-// first=1, rest=[2, 3, 4]
-```
-
----
-
-## 18. 三元表达式
-
-### Python
+**解决**：
 ```python
-# 语法：value_if_true if condition else value_if_false
-age = 20
-status = "adult" if age >= 18 else "minor"
-
-# 嵌套（不推荐，可读性差）
-score = 85
-grade = "A" if score >= 90 else "B" if score >= 80 else "C"
+print(user.get("age", 18))  # 类似 JS 的 user.age ?? 18
 ```
 
-### JS 类比
-```javascript
-// 三元运算符
-const age = 20;
-const status = age >= 18 ? "adult" : "minor";
-
-// 嵌套
-const score = 85;
-const grade = score >= 90 ? "A" : score >= 80 ? "B" : "C";
-```
+### 面试要点
+**问题**：Python 的 list 和 tuple 有什么区别？
+**答案**：
+- list 可变（可 append、修改），tuple 不可变
+- tuple 更轻量，适合做函数返回值、字典的键
+- 类似 JS 的 `const arr = []`（可变）vs `const arr = Object.freeze([])`（不可变）
 
 ---
 
-## 19. None、True、False
-
-### Python
-```python
-# None（类似 JS 的 null）
-value = None
-if value is None:
-    print("No value")
-
-# 布尔值（首字母大写）
-is_active = True
-is_deleted = False
-
-# 真值测试
-if []:        # False（空列表）
-if {}:        # False（空字典）
-if "":        # False（空字符串）
-if 0:         # False
-if None:      # False
-
-# 所有其他值都是 True
-if [1]:       # True
-if "hello":   # True
-```
-
-### JS 类比
-```javascript
-// null/undefined
-let value = null;
-if (value === null) {
-  console.log("No value");
-}
-
-// 布尔值（小写）
-const isActive = true;
-const isDeleted = false;
-
-// 假值
-if ([]) {}        // True（JS 的空数组是真值！）
-if ({}) {}        // True（JS 的空对象是真值！）
-if ("") {}        // False
-if (0) {}         // False
-if (null) {}      // False
-if (undefined) {} // False
-```
-
-### 关键差异
-- Python 的空列表/字典是假值，JS 是真值
-- Python 用 `is None`，JS 用 `=== null`
+## 下一步
+- [ ] 完成"立即验证"的 3 个步骤
+- [ ] 阅读 `projects/rag-kb/backend/app/main.py`，看看 FastAPI 怎么用
+- [ ] 下一篇笔记：《FastAPI 快速上手（对标 Express.js）》
 
 ---
 
-## 20. 文件操作
-
-### Python
-```python
-# 读取文件
-with open("file.txt", "r") as f:
-    content = f.read()
-
-# 逐行读取
-with open("file.txt", "r") as f:
-    for line in f:
-        print(line.strip())
-
-# 写入文件
-with open("file.txt", "w") as f:
-    f.write("Hello\n")
-
-# 追加
-with open("file.txt", "a") as f:
-    f.write("World\n")
-
-# 读取 JSON
-import json
-with open("data.json", "r") as f:
-    data = json.load(f)
-
-# 写入 JSON
-with open("data.json", "w") as f:
-    json.dump({"key": "value"}, f, indent=2)
-```
-
-### JS 类比
-```javascript
-// Node.js
-const fs = require('fs');
-
-// 读取文件
-const content = fs.readFileSync("file.txt", "utf-8");
-
-// 逐行读取
-const lines = content.split('\n');
-lines.forEach(line => console.log(line));
-
-// 写入文件
-fs.writeFileSync("file.txt", "Hello\n");
-
-// 追加
-fs.appendFileSync("file.txt", "World\n");
-
-// 读取 JSON
-const data = JSON.parse(fs.readFileSync("data.json", "utf-8"));
-
-// 写入 JSON
-fs.writeFileSync("data.json", JSON.stringify({ key: "value" }, null, 2));
-```
-
----
-
-## 21. 环境变量
-
-### Python
-```python
-import os
-
-# 读取环境变量
-api_key = os.getenv("API_KEY")
-api_key = os.getenv("API_KEY", "default_value")  # 带默认值
-
-# 设置环境变量
-os.environ["API_KEY"] = "xxx"
-
-# 检查是否存在
-if "API_KEY" in os.environ:
-    print("Key exists")
-```
-
-### JS 类比
-```javascript
-// Node.js
-const apiKey = process.env.API_KEY;
-const apiKey = process.env.API_KEY || "default_value";
-
-// 设置
-process.env.API_KEY = "xxx";
-
-// 检查
-if ("API_KEY" in process.env) {
-  console.log("Key exists");
-}
-```
-
----
-
-## 22. 路径操作
-
-### Python
-```python
-import os
-from pathlib import Path
-
-# os.path（旧式）
-path = os.path.join("folder", "file.txt")
-exists = os.path.exists(path)
-dirname = os.path.dirname(path)
-basename = os.path.basename(path)
-
-# pathlib（推荐）
-path = Path("folder") / "file.txt"
-exists = path.exists()
-parent = path.parent
-name = path.name
-stem = path.stem  # 不带扩展名
-suffix = path.suffix  # 扩展名
-
-# 创建目录
-Path("folder").mkdir(parents=True, exist_ok=True)
-```
-
-### JS 类比
-```javascript
-// Node.js
-const path = require('path');
-const fs = require('fs');
-
-// 路径操作
-const filePath = path.join("folder", "file.txt");
-const exists = fs.existsSync(filePath);
-const dirname = path.dirname(filePath);
-const basename = path.basename(filePath);
-
-// 创建目录
-fs.mkdirSync("folder", { recursive: true });
-```
-
----
-
-## 23. 时间日期
-
-### Python
-```python
-from datetime import datetime, timedelta
-
-# 当前时间
-now = datetime.now()
-print(now.strftime("%Y-%m-%d %H:%M:%S"))
-
-# 解析时间
-dt = datetime.strptime("2026-02-05", "%Y-%m-%d")
-
-# 时间运算
-tomorrow = now + timedelta(days=1)
-one_hour_ago = now - timedelta(hours=1)
-
-# 时间戳
-timestamp = now.timestamp()
-dt_from_timestamp = datetime.fromtimestamp(timestamp)
-```
-
-### JS 类比
-```javascript
-// 当前时间
-const now = new Date();
-console.log(now.toISOString());
-
-// 解析时间
-const dt = new Date("2026-02-05");
-
-// 时间运算
-const tomorrow = new Date(now.getTime() + 24*60*60*1000);
-const oneHourAgo = new Date(now.getTime() - 60*60*1000);
-
-// 时间戳
-const timestamp = now.getTime() / 1000;
-const dtFromTimestamp = new Date(timestamp * 1000);
-```
-
----
-
-## 24. 正则表达式
-
-### Python
-```python
-import re
-
-# 匹配
-match = re.search(r"\d+", "abc123def")
-if match:
-    print(match.group())  # "123"
-
-# 查找所有
-numbers = re.findall(r"\d+", "abc123def456")
-# ["123", "456"]
-
-# 替换
-text = re.sub(r"\d+", "X", "abc123def456")
-# "abcXdefX"
-
-# 分割
-parts = re.split(r"\s+", "hello  world")
-# ["hello", "world"]
-```
-
-### JS 类比
-```javascript
-// 匹配
-const match = "abc123def".match(/\d+/);
-if (match) {
-  console.log(match[0]);  // "123"
-}
-
-// 查找所有
-const numbers = "abc123def456".match(/\d+/g);
-// ["123", "456"]
-
-// 替换
-const text = "abc123def456".replace(/\d+/g, "X");
-// "abcXdefX"
-
-// 分割
-const parts = "hello  world".split(/\s+/);
-// ["hello", "world"]
-```
-
----
-
-## 25. 常用标准库速查
-
-| 功能 | Python | JS 类比 |
-|------|--------|---------|
-| HTTP 请求 | `import requests` | `fetch()` / `axios` |
-| JSON | `import json` | `JSON.parse/stringify` |
-| 随机数 | `import random` | `Math.random()` |
-| 时间 | `import time` | `Date.now()` |
-| 正则 | `import re` | `/regex/` |
-| 路径 | `from pathlib import Path` | `require('path')` |
-| 环境变量 | `import os` | `process.env` |
-| 命令行参数 | `import sys; sys.argv` | `process.argv` |
-
----
-
-## 下次遇到新语法时
-
-1. 在这个文件里添加新的章节
-2. 写清楚 Python 代码 + JS 类比
-3. 标注关键差异和坑点
+## 参考资料
+- [Python 官方教程（中文）](https://docs.python.org/zh-cn/3/tutorial/)
+- [Real Python（实战教程）](https://realpython.com/)
+- 你的仓库：`playground/` 目录可以随时做小实验

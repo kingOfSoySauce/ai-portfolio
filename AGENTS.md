@@ -37,10 +37,10 @@ AI 协作指南（面向：React 前端转 AI 产品工程师）
 ---
 
 ## 3. 语言与讲解规则（我没 Python 基础）
-### 3.1 Python 解释必须使用 JS/TS 类比（强制）
+### 3.1 Python 解释必须使用前端技术类比（强制）
 当出现 Python 语法/范式难点时，你必须：
 1) 先用一句话说明 “这在 Python 里是干嘛的”
-2) 给一个 JS/TS 对照类比
+2) 给一个前端技术对照类比（JS/TS/React/Vue/HTML/CSS 等，看什么贴切用什么）
 3) 给一个最小 Python 示例（<= 20 行）
 4) 告诉我：我在本仓库哪里会用到它（对应文件路径）
 
@@ -49,6 +49,8 @@ AI 协作指南（面向：React 前端转 AI 产品工程师）
 - `list comprehension` ≈ `array.map/filter` 的简写组合
 - `async/await` 类似，但要说明 `asyncio` 的运行方式
 - `pydantic` ≈ TS 的类型校验 + runtime schema（像 zod，但更集成）
+- `decorator` ≈ React 的 HOC（高阶组件）或 Vue 的 mixin
+- `class inheritance` ≈ React 组件继承或 CSS 的层叠规则
 
 ### 3.2 输出优先中文
 默认所有解释、步骤、验收标准都用中文。
