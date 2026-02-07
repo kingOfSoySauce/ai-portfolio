@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     
     # CORS 配置
-    CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173"]
+    CORS_ORIGINS: List[str] = ["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3002", "http://192.168.1.103:3002"]
     
     # LLM 配置（Day2 会用到）
     LLM_MODE: str = "local"  # "local" 或 "openai"
