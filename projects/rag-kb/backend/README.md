@@ -8,7 +8,7 @@
 
 ```bash
 cd backend
-python -m venv .venv
+python3 -m venv .venv
 source .venv/bin/activate  # macOS/Linux
 pip install -r requirements.txt
 ```

@@ -81,7 +81,8 @@ async def root():
 
 # TODO: Day2+ 在这里挂载其他路由
 # from app.api import chat, extract, ingest, rag
-# app.include_router(chat.router, prefix="/chat", tags=["chat"])
+from app.api import chat
+app.include_router(chat.router, prefix="/chat", tags=["chat"])
 # app.include_router(extract.router, prefix="/extract", tags=["extract"])
 # app.include_router(ingest.router, prefix="/ingest", tags=["ingest"])
 # app.include_router(rag.router, prefix="/rag", tags=["rag"])
